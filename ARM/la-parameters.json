@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "location": {
+            "value": "Central US"
+        },
+        "environmentName": {
+            "value": "UAT"
+        },
+        "projectName": {
+            "value": "Demo 2 Global Azure 2021"
+        },
+        "logicAppName": {
+            "value": "jmfzgaclassicla"
+        },
+        "appServicePlanName": {
+            "value": "jmfzgaclassicaps"
+        },
+        "storageName": {
+            "value": "jmfzga"
+        },
+        "kind": {
+            "value": "StorageV2"
+        },
+        "skuName": {
+            "value": "Standard_LRS"
+        },
+        "skuTier": {
+            "value": "Standard"
+          }
+        }
+    }

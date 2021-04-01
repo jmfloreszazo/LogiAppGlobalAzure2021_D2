@@ -1,0 +1,53 @@
+name: Build and Deploy (container)
+
+env:
+  RG_CON: 'jmfzga-container-con-uat'
+  LA_NAME: 'jmfzgacontainerla'
+  IMAGE_NAME: 'jmfzga-image-name'
+  IMAGE_TAG: 'jmfzga-image-tag'
+  ACR_NAME: 'jmfzgaacr'
+  IMAGE_URI: 'jmfzgaacr.azurecr.io/jmfzga-image-name:jmfzga-image-tag'
+
+on:
+  - workflow_dispatch 
+
+jobs:
+   logic_app_build: 
+    runs-on: ubuntu-latest
+    steps: 
+
+    - name: Checkout
+      uses: actions/checkout@v1
+    
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+        enable-AzPSSession: true 
+
+    - name: Generate Connections
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          ./Scripts/Generate-Connections.ps1 -resourceGroup '${{ env.RG_CON }}'
+        azPSVersion: latest
+
+    - name: 'Login to Azure Container Registry'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ env.ACR_NAME }}
+        password: ${{secrets.ACRPASSWORD}} #Generated in IaC. Output section of Login To Azure Container Registry
+
+    - name: 'Build & Push Docker Image'
+      shell: bash
+      run: |
+        docker build . -t  ${{ env.IMAGE_URI }}
+        docker push  ${{ env.IMAGE_URI }}
+
+    - name: 'Deploy Logic App Container'
+      uses: Azure/functions-container-action@v1
+      id: fa
+      with:
+        app-name: ${{ env.LA_NAME }}
+        image: '${{ env.IMAGE_URI }}'

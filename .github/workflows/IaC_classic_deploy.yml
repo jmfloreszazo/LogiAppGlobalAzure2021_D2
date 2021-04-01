@@ -1,0 +1,47 @@
+name: IaC (classic)
+
+on:
+  - workflow_dispatch 
+
+env:
+  AZURE_LOGICAPP_PACKAGE_PATH: '.'
+  RG_LA: 'jmfzga-classic-la-uat'
+  RG_CON: 'jmfzga-classic-con-uat'
+
+jobs:
+  deploy-all: 
+    runs-on: ubuntu-latest
+    steps:
+                      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS  }}
+        enable-AzPSSession: true 
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Deploy Logic App Resources
+      uses: Azure/arm-deploy@v1.0.1
+      id: ladeploy
+      with:
+        scope: resourcegroup  
+        subscriptionId: ${{ secrets.AZURE_SUB }}
+        resourceGroupName:  ${{ env.RG_LA }}
+        template: ARM/la-template.json
+        parameters: ARM/la-parameters.json
+        deploymentMode: Incremental
+   
+    - name: Deploy Connector Resources 
+      id: msdemoconn
+      uses: Azure/arm-deploy@v1.0.1
+      with:
+        scope: resourcegroup  
+        subscriptionId: ${{ secrets.AZURE_SUB }}
+        resourceGroupName: ${{ env.RG_CON }}
+        template: ARM/connectors-template.json
+        parameters: ARM/connectors-parameters.json logicAppSystemAssignedIdentityTenantId=${{ steps.ladeploy.outputs.logicAppSystemAssignedIdentityTenantId }} logicAppSystemAssignedIdentityObjectId=${{ steps.ladeploy.outputs.logicAppSystemAssignedIdentityObjectId }}
+        deploymentMode: Incremental
+
+   
