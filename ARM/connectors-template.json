@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "logicAppSystemAssignedIdentityTenantId": {
+            "type": "string"
+        },
+        "logicAppSystemAssignedIdentityObjectId": {
+            "type": "string"
+        },        
         "location": {
             "defaultValue": "Central US", 
             "type": "string"
@@ -25,6 +31,24 @@
                 "customParameterValues": {},
                 "api": {
                     "id": "[subscriptionResourceId('Microsoft.Web/locations/managedApis', parameters('location'), parameters('connections_outlook_name')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections/accessPolicies",
+            "apiVersion": "2016-06-01",
+            "name": "[concat(parameters('connections_outlook_name'),'/',parameters('logicAppSystemAssignedIdentityObjectId'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections',parameters('connections_outlook_name'))]"
+            ],
+            "properties": {
+                "principal": {
+                    "type": "ActiveDirectory",
+                    "identity": {
+                        "tenantId": "[parameters('logicAppSystemAssignedIdentityTenantId')]",
+                        "objectId": "[parameters('logicAppSystemAssignedIdentityObjectId')]"
+                    }
                 }
             }
         }
