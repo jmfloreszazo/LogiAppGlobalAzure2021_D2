@@ -30,7 +30,7 @@
                 "displayName": "Outlook.com",
                 "customParameterValues": {},
                 "api": {
-                    "id": "[subscriptionResourceId('Microsoft.Web/locations/managedApis', parameters('location'), parameters('connections_outlook_name')]"
+                    "id": "[subscriptionResourceId('Microsoft.Web/locations/managedApis', parameters('location'), parameters('connections_outlook_name'))]"
                 }
             }
         },
