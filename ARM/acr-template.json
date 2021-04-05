@@ -106,18 +106,18 @@
           "Project": "[parameters('projectName')]"
         },
         "sku": {
-          "name": "F1",
-          "tier": "Free",
-          "size": "F1",
-          "family": "F",
-          "capacity": 0
+          "name": "EP1",
+          "tier": "ElasticPremium",
+          "size": "EP1",
+          "family": "EP",
+          "capacity": 1
         },
-        "kind": "app",
+        "kind": "elastic",
         "properties": {
           "perSiteScaling": false,
-          "maximumElasticWorkerCount": 1,
+          "maximumElasticWorkerCount": 20,
           "isSpot": false,
-          "reserved": false,
+          "reserved": true,
           "isXenon": false,
           "hyperV": false,
           "targetWorkerCount": 0,
